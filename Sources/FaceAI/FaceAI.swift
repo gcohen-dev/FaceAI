@@ -1,3 +1,3 @@
 struct FaceAI {
-    var text = "Hello, World! 2"
+    var text = "Hello, World! 222"
 }
