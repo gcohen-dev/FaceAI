@@ -9,58 +9,42 @@ import Foundation
 import Photos
 import UIKit
 
-final class ImageFetcherService {
+private final class ImageFetcherService {
     
     private let imgManager = PHImageManager.default()
-    private let downsampleSize: CGFloat = 500
-    private var rquestOptions: PHImageRequestOptions {
-        let options = PHImageRequestOptions()
-        options.resizeMode = .exact
-        options.version = .current
-        return options
+    private let options: ImageFetcherOptions
+    
+    /// This service help to fetch image from PHAssets
+    /// - Parameter options: class options include image size etc.
+    private init(options: ImageFetcherOptions = ImageFetcherOptions()) {
+        self.options = options
     }
     
-    func image(frome phAsset: PHAsset) -> UIImage?  {
+    private func image(from phAsset: PHAsset) -> UIImage?  {
 
         return autoreleasepool { () -> UIImage? in
             var myImage:UIImage?
                 let semaphore = DispatchSemaphore(value: 0)
                 
-            if #available(iOS 13, *) {
-                imgManager.requestImageDataAndOrientation(for: phAsset, options: rquestOptions) { [self] (data, str, ori, _) in
-                    myImage = data?.downSmaple(to: CGSize(width: downsampleSize, height: downsampleSize), scale: UIScreen.main.scale)
+            imgManager.requestImageDataAndOrientation(for: phAsset, options: options.rquestOptions) { [self] (data, str, ori, _) in
+                    myImage = data?.downSmaple(to: CGSize(width: options.downsampleImageSize, height: options.downsampleImageSize), scale: UIScreen.main.scale)
                     semaphore.signal()
                 }
-            } else {
-                // Fallback on earlier versions
-                imgManager.requestImageData(for: phAsset, options: rquestOptions) { [self] (data, str, ori, _) in
-                    myImage = data?.downSmaple(to: CGSize(width: downsampleSize, height: downsampleSize), scale: UIScreen.main.scale)
-                    semaphore.signal()
-                }
-            }
             _ = semaphore.wait(wallTimeout: .distantFuture)
             return myImage
         }
     }
     
-    func cgImage(from phAsset: PHAsset) -> CGImage?  {
+    private func cgImage(from phAsset: PHAsset) -> CGImage?  {
 
         return autoreleasepool { () -> CGImage? in
             var myImage:CGImage?
                 let semaphore = DispatchSemaphore(value: 0)
                 
-            if #available(iOS 13, *) {
-                imgManager.requestImageDataAndOrientation(for: phAsset, options: rquestOptions) { (data, str, ori, _) in
-                    myImage = data?.downSmaple(to: CGSize(width: 500, height: 500), scale: UIScreen.main.scale)
+            imgManager.requestImageDataAndOrientation(for: phAsset, options: options.rquestOptions) { [self] (data, str, ori, _) in
+                myImage = data?.downSmaple(to: CGSize(width: options.downsampleImageSize, height: options.downsampleImageSize), scale: UIScreen.main.scale)
                     semaphore.signal()
                 }
-            } else {
-                // Fallback on earlier versions
-                imgManager.requestImageData(for: phAsset, options: rquestOptions) { (data, str, ori, _) in
-                    myImage = data?.downSmaple(to: CGSize(width: 500, height: 500), scale: UIScreen.main.scale)
-                    semaphore.signal()
-                }
-            }
                 _ = semaphore.wait(wallTimeout: .distantFuture)
             return myImage
         }

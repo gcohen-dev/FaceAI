@@ -8,6 +8,7 @@
 import Photos
 
 final class PhotosAuthorizationService {
+    
     static func checkPhotoLibraryPermission(completion: @escaping (Result<Void, PhotosAuthorizationError>) -> Void) {
         let status = PHPhotoLibrary.authorizationStatus()
         switch status {
@@ -21,9 +22,7 @@ final class PhotosAuthorizationService {
                 DispatchQueue.main.async {
                     switch status {
                     case .authorized, .limited: completion(Result.success(()))
-                    // as above
                     case .denied, .restricted: completion(Result.failure(.denied))
-                    // as above
                     case .notDetermined: completion(Result.failure(.notDetermined))
                         fatalError("should not be here \(PhotosAuthorizationService.self)")
                     @unknown default:

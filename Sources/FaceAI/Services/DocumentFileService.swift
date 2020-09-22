@@ -39,9 +39,7 @@ class DocumentFileService {
             throw error
         }
         
-    }
-    
-    
+    }    
     
     static func store<T: Codable>(_ object: T, atPath: String) {
         let encoder = JSONEncoder()
@@ -66,9 +64,4 @@ class DocumentFileService {
             fatalError("No data at \(atPath)!")
         }
     }
-}
-
-
-enum DocumentFileServiceError:Error {
-    case documentDirectoryNotFound
 }
