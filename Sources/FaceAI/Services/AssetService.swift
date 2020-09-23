@@ -8,7 +8,7 @@
 import Foundation
 import Photos
 
-class AssetService {
+public class AssetService {
     
     /// Fetch assets from device gallery
     /// - Parameter options: Options for fetching assests like max number of photos, sorting options etc.
