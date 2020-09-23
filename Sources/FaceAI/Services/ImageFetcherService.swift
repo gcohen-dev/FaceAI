@@ -35,7 +35,7 @@ private final class ImageFetcherService {
         }
     }
     
-    private func cgImage(from phAsset: PHAsset) -> CGImage?  {
+    private func cgImage(from phAsset: PHAsset) -> CGImage? {
 
         return autoreleasepool { () -> CGImage? in
             var myImage:CGImage?
@@ -48,5 +48,9 @@ private final class ImageFetcherService {
                 _ = semaphore.wait(wallTimeout: .distantFuture)
             return myImage
         }
+    }
+    
+    private func image(form localPath: String) -> UIImage? {
+        UIImage(contentsOfFile: localPath)
     }
 }
