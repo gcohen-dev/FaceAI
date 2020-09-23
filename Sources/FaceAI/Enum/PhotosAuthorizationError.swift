@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PhotosAuthorizationError: Error {
+public enum PhotosAuthorizationError: Error {
     case denied
     case notDetermined
 }

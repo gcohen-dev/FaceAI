@@ -7,9 +7,9 @@
 
 import Photos
 
-final class PhotosAuthorizationService {
+public final class PhotosAuthorizationService {
     
-    static func checkPhotoLibraryPermission(completion: @escaping (Result<Void, PhotosAuthorizationError>) -> Void) {
+    public static func checkPhotoLibraryPermission(completion: @escaping (Result<Void, PhotosAuthorizationError>) -> Void) {
         let status = PHPhotoLibrary.authorizationStatus()
         switch status {
         case .authorized, .limited: completion(Result.success(()))
