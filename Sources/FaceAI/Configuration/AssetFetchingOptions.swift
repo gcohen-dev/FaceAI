@@ -8,7 +8,7 @@
 import Foundation
 import Photos
 
-class AssetFetchingOptions {
+public class AssetFetchingOptions {
     
     var sortDescriptors: [NSSortDescriptor]?
     var assetCollection: AssetService.AssetCollection = .allAssets
