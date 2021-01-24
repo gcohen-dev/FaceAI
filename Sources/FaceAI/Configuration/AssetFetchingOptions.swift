@@ -10,9 +10,13 @@ import Photos
 
 public class AssetFetchingOptions {
     
-    init()
-    var sortDescriptors: [NSSortDescriptor]?
-    var assetCollection: AssetService.AssetCollection = .allAssets
+    public init(sortDescriptors: [NSSortDescriptor]? = nil,
+                assetCollection: AssetService.AssetCollection = .allAssets) {
+        self.sortDescriptors = sortDescriptors
+        self.assetCollection = assetCollection
+    }
+    let sortDescriptors: [NSSortDescriptor]?
+    let assetCollection: AssetService.AssetCollection
     let predicate: NSPredicate = NSPredicate(
         format: "NOT (((mediaSubtype & %d) != 0)",
         PHAssetMediaSubtype.photoScreenshot.rawValue
