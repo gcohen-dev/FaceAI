@@ -28,8 +28,8 @@ private extension AssetService {
     
     private func fetchAssets(with options: AssetFetchingOptions) -> PHFetchResult<PHAsset> {
         let fetchOption = PHFetchOptions()
-//        fetchOption.sortDescriptors = options.sortDescriptors
-        fetchOption.predicate = options.predicate
+        fetchOption.sortDescriptors = options.sortDescriptors
+//        fetchOption.predicate = options.predicate
         switch options.assetCollection {
         case .allAssets:
             return PHAsset.fetchAssets(with: fetchOption)
