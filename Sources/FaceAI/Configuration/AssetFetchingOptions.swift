@@ -17,9 +17,9 @@ public class AssetFetchingOptions {
     }
     let sortDescriptors: [NSSortDescriptor]?
     let assetCollection: AssetService.AssetCollection
-    let predicate: NSPredicate = NSPredicate(
-        format: "NOT (((mediaSubtype & %d) != 0)",
-        PHAssetMediaSubtype.photoScreenshot.rawValue
-    )
+//    let predicate: NSPredicate = NSPredicate(
+//        format: "NOT (((mediaSubtype & %d) != 0)",
+//        PHAssetMediaSubtype.photoScreenshot.rawValue
+//    )
 }
 
