@@ -12,7 +12,7 @@ public class AssetService {
     
     /// Fetch assets from device gallery
     /// - Parameter options: Options for fetching assests like max number of photos, sorting options etc.
-    public func fetchAssets(with options: AssetFetchingOptions? = nil) -> PHFetchResult<PHAsset> {
+    public static func fetchAssets(with options: AssetFetchingOptions? = nil) -> PHFetchResult<PHAsset> {
         return fetchAssets(with: options ?? AssetFetchingOptions())
     }
     
