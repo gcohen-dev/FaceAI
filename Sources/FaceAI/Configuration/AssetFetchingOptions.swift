@@ -10,6 +10,7 @@ import Photos
 
 public class AssetFetchingOptions {
     
+    init()
     var sortDescriptors: [NSSortDescriptor]?
     var assetCollection: AssetService.AssetCollection = .allAssets
     let predicate: NSPredicate = NSPredicate(
