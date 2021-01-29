@@ -9,18 +9,18 @@ import Foundation
 import Photos
 import UIKit
 
-private final class ImageFetcherService {
+class ImageFetcherService {
     
     private let imgManager = PHImageManager.default()
     private let options: ImageFetcherOptions
     
     /// This service help to fetch image from PHAssets
     /// - Parameter options: class options include image size etc.
-    private init(options: ImageFetcherOptions = ImageFetcherOptions()) {
+    init(options: ImageFetcherOptions = ImageFetcherOptions()) {
         self.options = options
     }
     
-    private func image(from phAsset: PHAsset) -> UIImage?  {
+    func image(from phAsset: PHAsset) -> UIImage?  {
 
         return autoreleasepool { () -> UIImage? in
             var myImage:UIImage?

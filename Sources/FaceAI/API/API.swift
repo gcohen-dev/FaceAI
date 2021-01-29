@@ -1,39 +1,26 @@
 //
-//  File.swift
+//  FaceAI.swift
 //  
 //
-//  Created by amir.lahav on 22/09/2020.
+//  Created by Amir Lahav on 29/01/2021.
 //
 
 import Foundation
-import Photos
 
-
-
-//
-// AssetService API
-
-
-// options
-// collectoin: FetchCollection
-// fetchOptions
-// maxNumberOfPhotos
-
-
-
-// func fetchAssets(with options: AssetOptions?) -> PHFetchResult<PHAsset>
-
-
-// StackService API
-
-// func stack<T: stackable, S>(_ result: T) -> Stack<[Asset]>
-
-
-// cluster API
-//func cluster(assets: Stack<[Asset]>, with options: ClustersOptions?)
-
-
-
-
-//protocol stackable
-// chunke
+public class API {
+    
+    public static func cluster(assetCollection: AssetCollection) {
+        let service = AssetService()
+        let options = AssetFetchingOptions(sortDescriptors: nil, assetCollection: assetCollection)
+        var assets = service.stackAssets(with: options)
+        
+        VisionManager.detect(objects: assets, with: [.faceDetection, .imageQuality]) { (result) in
+            switch result {
+            case .success(let photos):
+                print(photos.first!)
+            case .failure(let error):
+                print(error)
+            }
+        }
+    }
+}

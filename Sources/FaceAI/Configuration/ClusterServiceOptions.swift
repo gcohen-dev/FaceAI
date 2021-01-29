@@ -7,7 +7,7 @@
 
 import Foundation
 
-class ClusterServiceOptions {
+public class ClusterServiceOptions {
     var maxNumberOfAssetsToProcess: Int = Int.max
     var assetsChunckSize: Int = 10
     var minimumClusterSize: Int = 0

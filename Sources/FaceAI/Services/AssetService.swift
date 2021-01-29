@@ -8,29 +8,45 @@
 import Foundation
 import Photos
 
-public class AssetService {
+class AssetService {
     
-    public init() {
-        
+    init() { }
+    
+    func stackAssets(with options: AssetFetchingOptions? = nil) -> Stack<[PHAsset]> {
+         let assets = fetchAssets(with: options) |> assetParser
+         return chunk(assets: assets, usersAssets: 200, chunkSize: 10) |> stackAssets
     }
     
     /// Fetch assets from device gallery
     /// - Parameter options: Options for fetching assests like max number of photos, sorting options etc.
-    public func fetchAssets(with options: AssetFetchingOptions? = nil) -> PHFetchResult<PHAsset> {
+    func fetchAssets(with options: AssetFetchingOptions? = nil) -> PHFetchResult<PHAsset> {
         return fetchAssets(with: options ?? AssetFetchingOptions())
-    }
-    
-    public enum AssetCollection {
-        case allAssets
-        case albumName(_ name: String)
-        case assetCollection(_ collection: PHAssetCollection)
-        case identifiers(_ ids: [String])
     }
 }
 
 private extension AssetService {
     
-    private func fetchAssets(with options: AssetFetchingOptions) -> PHFetchResult<PHAsset> {
+    private func stackAssets(chuncks: [[PHAsset]]) -> Stack<[PHAsset]> {
+        var stack = Stack<[PHAsset]>()
+        chuncks.forEach({ stack.push($0) })
+        return stack
+    }
+    
+    private func chunk(assets:[PHAsset], usersAssets:Int, chunkSize:Int) -> [[PHAsset]] {
+        assets.prefix(usersAssets).chunked(into: chunkSize)
+    }
+    
+    func assetParser(asstes: PHFetchResult<PHAsset>) -> [PHAsset] {
+        var assets:[PHAsset] = []
+        asstes.enumerateObjects { (asset, _, _) in
+            if !(asset.mediaSubtypes == .photoScreenshot) {
+                assets.append(asset)
+            }
+        }
+        return assets
+    }
+    
+    func fetchAssets(with options: AssetFetchingOptions) -> PHFetchResult<PHAsset> {
         let fetchOption = PHFetchOptions()
         fetchOption.sortDescriptors = options.sortDescriptors
 //        fetchOption.predicate = options.predicate
