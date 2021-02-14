@@ -11,13 +11,15 @@ public class API {
     
     public static func cluster(assetCollection: AssetCollection) {
         let service = AssetService()
-        let options = AssetFetchingOptions(sortDescriptors: nil, assetCollection: assetCollection)
-        var assets = service.stackAssets(with: options)
+        let options = AssetFetchingOptions(sortDescriptors: nil,
+                                           assetCollection: assetCollection)
+        let assets = service.stackAssets(with: options)
         
-        VisionManager.detect(objects: assets, with: [.faceDetection, .imageQuality]) { (result) in
+        VisionManager.detect(objects: assets, with: [.cluster]) { (result) in
             switch result {
             case .success(let photos):
-                print(photos.first!)
+                break
+
             case .failure(let error):
                 print(error)
             }

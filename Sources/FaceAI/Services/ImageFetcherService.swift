@@ -35,6 +35,23 @@ class ImageFetcherService {
         }
     }
     
+    func image(from identifier: String) -> UIImage?  {
+
+        return autoreleasepool { () -> UIImage? in
+            var myImage:UIImage?
+                let semaphore = DispatchSemaphore(value: 0)
+            guard let asset = PHAsset.fetchAssets(withLocalIdentifiers: [identifier], options: nil).firstObject else {
+                return nil
+            }
+            imgManager.requestImageDataAndOrientation(for: asset, options: options.rquestOptions) { [self] (data, str, ori, _) in
+                    myImage = data?.downSmaple(to: CGSize(width: options.downsampleImageSize, height: options.downsampleImageSize), scale: UIScreen.main.scale)
+                    semaphore.signal()
+                }
+            _ = semaphore.wait(wallTimeout: .distantFuture)
+            return myImage
+        }
+    }
+    
     private func cgImage(from phAsset: PHAsset) -> CGImage? {
 
         return autoreleasepool { () -> CGImage? in
