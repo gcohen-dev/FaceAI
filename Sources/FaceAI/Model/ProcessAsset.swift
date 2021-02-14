@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Vision
 
 protocol ProcessAssetsProtocol {
     var identifier: String { get }
@@ -19,6 +20,7 @@ struct ProcessAsset: ProcessAssetsProtocol {
     let tags: [String]
     let faceQuality: Float
     let observation: [CGRect]
+    let faces: [Face]
 }
 
 struct CustomProcessAsset: ProcessAssetsProtocol {
@@ -26,15 +28,9 @@ struct CustomProcessAsset: ProcessAssetsProtocol {
     let image: UIImage
 }
 
-struct ProcessedAsset {
-    let localIdentifier: String
-    let faceQuality: Float
-    let categories: [String]
-    let boundingBoxes: [CGRect]
-    init(asset: ProcessAsset) {
-        self.localIdentifier = asset.identifier
-        self.faceQuality = asset.faceQuality
-        self.categories = asset.tags
-        self.boundingBoxes = asset.observation
-    }
+
+
+struct FaceClusters {
+    let faceID: String
+    let faces: [Face]
 }

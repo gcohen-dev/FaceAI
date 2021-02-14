@@ -8,19 +8,26 @@
 import Foundation
 import Photos
 
+typealias SinglePipe<Input,Output> = (Input) throws -> Output
+typealias MultiplePipe<Input,Output> = ([Input]) throws -> [Output]
+typealias GenericStackProcessor<Input,Output> = (Stack<[Input]>) throws -> [Output]
+
+typealias Processor = ([ProcessAsset]) throws -> [ProcessAsset]
+typealias StackProcessor = (Stack<[ProcessAsset]>) throws -> [ProcessAsset]
+
 class ImageProcessor {
         
     /// Create opertion queue to process all assets.
     /// - Return analized objects
     /// - Parameter images: User Images
-    static func imageProcessor<T>(images: [ProcessAsset], preformOn:@escaping (ProcessAsset) throws -> [T]) ->  [T] {
+    static func multipleProcessor<Input, Output>(inputs: [Input], preformOn: @escaping (Input) throws -> [Output]) ->  [Output] {
         let queue = OperationQueue()
-        var objects:[T] = []
-        let blocks = images.map { (image) -> BlockOperation in
+        var objects: [Output] = []
+        let blocks = inputs.map { (input) -> BlockOperation in
             return BlockOperation {
                 do {
-                    let face = try preformOn(image)
-                    objects.append(contentsOf: face)
+                    let processedObject = try preformOn(input)
+                    objects.append(contentsOf: processedObject)
                 }catch {
                     //TODO: handle error
                 }
@@ -34,10 +41,11 @@ class ImageProcessor {
     /// Create opertion queue to process all assets.
     /// - Return analized objects
     /// - Parameter images: User Images
-    static func singleImageProcessor<T>(images:[ProcessAsset], preformOn:@escaping (ProcessAsset) throws -> T) ->  [T] {
+    static func singleProcessor<Input, Output>(element: [Input],
+                                               preformOn: @escaping SinglePipe<Input,Output>) ->  [Output] {
         let queue = OperationQueue()
-        var objects:[T] = []
-        let blocks = images.map { (image) -> BlockOperation in
+        var objects: [Output] = []
+        let blocks = element.map { (image) -> BlockOperation in
             return BlockOperation {
                 do {
                     let object = try preformOn(image)
@@ -54,34 +62,21 @@ class ImageProcessor {
     /// Create opertion queue to process all assets.
     /// - Return analized objects
     /// - Parameter images: User Images
-    static func singleProcessProcessor(preformOn:@escaping (ProcessAsset) throws -> ProcessAsset) ->  Processor {
-        return { (assets) in
-            let queue = OperationQueue()
-            var objects:[ProcessAsset] = []
-            let blocks = assets.map { (image) -> BlockOperation in
-                return BlockOperation {
-                    do {
-                        let object = try preformOn(image)
-                        objects.append(object)
-                    }catch {
-                        //TODO: handle error
-                    }
-                }
-            }
-            queue.addOperations(blocks, waitUntilFinished: true)
-            return objects
+    static func makeSingleProcessProcessor<Input, Output>(preformOn: @escaping SinglePipe<Input,Output>) -> MultiplePipe<Input, Output> {
+        return { (element) in
+            return singleProcessor(element: element, preformOn: preformOn)
         }
     }
     
     
-    static func stackProcessor<T>(_ stack: Stack<[PHAsset]>, processor:@escaping ([ProcessAsset]) throws -> [T]) -> [T] {
+    static func stackProcessor<Input, Output>(_ stack: Stack<[Input]>, processor: @escaping MultiplePipe<Input,Output>) -> [Output] {
         var stack = stack
-        var objects:[T] = []
+        var objects: [Output] = []
         while !stack.isEmpty() {
             let startDate = Date()
             if let asssts = stack.pop() {
                 do {
-                    let detectObjects = try asssts.processAsset() |> processor
+                    let detectObjects = try processor(asssts)
                     objects.append(contentsOf: detectObjects)
                 }catch {   }
             }
@@ -90,22 +85,9 @@ class ImageProcessor {
         return objects
     }
     
-    static func createStackProcessor(processor:@escaping Processor) -> StackProcessor {
+    static func makeStackProcessor<Input, Output>(processor: @escaping MultiplePipe<Input, Output>) -> GenericStackProcessor<Input, Output> {
         return { (stack) in
-            var stack = stack
-            var objects:[ProcessAsset] = []
-            while !stack.isEmpty() {
-                if let asssts = stack.pop() {
-                    do {
-                        let detectObjects = try asssts.processAsset() |> processor
-                        objects.append(contentsOf: detectObjects)
-                    }catch {   }
-                }
-            }
-            return objects
+            return stackProcessor(stack, processor: processor)
         }
-        
-
     }
-
 }

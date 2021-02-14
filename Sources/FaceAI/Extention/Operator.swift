@@ -30,6 +30,6 @@ func |>> <U, T, Z> (f: @escaping (U) throws ->T, g: @escaping (T) throws -> Z) -
 
 // declare new operator
 infix operator >>> : ComparisonPrecedence
-func >>> <U, N, T, Z> (f:@escaping (U,N) throws -> T, g:@escaping (T)->Z) -> (U,N) throws -> Z {
+func >>> <U, N, T, Z> (f:@escaping (U,N) throws -> T, g: @escaping (T)->Z) -> (U,N) throws -> Z {
     return { g( try f($0, $1)) }
 }

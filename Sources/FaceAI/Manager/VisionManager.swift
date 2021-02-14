@@ -17,11 +17,15 @@ final class VisionManager {
 
     //MARK: Public API
     
-    static func detect(objects stack: Stack<[PHAsset]>, with jobTypes: [VisionProcessType], completion:@escaping(Result<[ProcessedAsset], VisionProcessError>) -> Void) {
+    static func detect(objects stack: Stack<[ProcessAsset]>, with jobTypes: [VisionProcessType], completion: @escaping(Result<[ProcessedAsset], VisionProcessError>) -> Void) {
         detector.performDetection(stack: stack, jobTypes: jobTypes, completion: completion)
     }
     
     static func detect<T>(in assets: UIImage, model: MLModel, returnType:T.Type, completion: @escaping (Result<T, VisionProcessError>)-> Void) {
         detector.perform(image: assets, model: model, completion: completion)
+    }
+    
+    static func cluster(_ stack: Stack<[PHAsset]>) {
+        
     }
 }
