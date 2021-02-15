@@ -7,12 +7,16 @@
 
 import UIKit
 
-struct ProcessedAsset {
-    let localIdentifier: String
+public struct ProcessedAsset: Hashable {
+    public let localIdentifier: String
     let faceQuality: Float
     let categories: [String]
     let boundingBoxes: [CGRect]
-    let faces: [Face]
+    public let faces: [Face]
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(localIdentifier)
+    }
     init(asset: ProcessAsset) {
         self.localIdentifier = asset.identifier
         self.faceQuality = asset.faceQuality

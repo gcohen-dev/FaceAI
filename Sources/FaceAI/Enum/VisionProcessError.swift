@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum VisionProcessError: Error {
+public enum VisionProcessError: Error {
     
     case unknown
     case fetchImages

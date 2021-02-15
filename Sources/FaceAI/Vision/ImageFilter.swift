@@ -182,14 +182,22 @@ class ImageFilter {
             let emb = firstObserve.featureValue.multiArrayValue else {
             return face
         }
-        let embbeded = buffer2Array(length: emb.count, data: emb.dataPointer, Double.self)
-        return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: UIImage(), meanEmbedded: embbeded, faceFeatures: face.faceFeatures, quality: face.quality)
+        let embbeded = buffer2Array(length: emb.count, data: emb.dataPointer, Double.self) |> norm_l2
+        return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: face.faceCroppedImage, meanEmbedded: embbeded, faceFeatures: face.faceFeatures, quality: face.quality)
     }
     
     private func buffer2Array<T>(length: Int, data: UnsafeMutableRawPointer, _: T.Type) -> [T] {
         let ptr = data.bindMemory(to: T.self, capacity: length)
         let buffer = UnsafeBufferPointer(start: ptr, count: length)
         return Array(buffer)
+    }
+    
+    private func norm_l2(emb: [Double]) -> [Double] {
+        let sum: Double = emb.reduce(0) { (result, next) in
+            return result + next * next
+        }
+        let emb: [Double] = emb.compactMap({ return $0/sqrt(sum) })
+        return emb
     }
     
     func extractChip(face: Face, image: UIImage) -> Face {

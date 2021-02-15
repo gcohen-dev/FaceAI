@@ -14,7 +14,7 @@ class ImageFetcherOptions {
     let rquestOptions: PHImageRequestOptions
     
     init(
-        downsampleImageSize: CGFloat = 500,
+        downsampleImageSize: CGFloat = 400,
         rquestOptions: PHImageRequestOptions = PHImageRequestOptions.defaultOptions) {
         self.downsampleImageSize = downsampleImageSize
         self.rquestOptions = rquestOptions

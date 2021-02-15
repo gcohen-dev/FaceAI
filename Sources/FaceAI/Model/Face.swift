@@ -8,11 +8,29 @@
 import UIKit
 import Vision
 
-struct Face {
-    let localIdnetifier: String
+public struct Face: Hashable, Identifiable {
+    public var id: String {
+        localIdnetifier + UUID().uuidString
+    }
+    
+    public let localIdnetifier: String
     let faceID: String
-    let faceCroppedImage: UIImage
+    public let faceCroppedImage: UIImage
     let meanEmbedded: [Double]
     let faceFeatures: VNFaceObservation
     let quality: Float
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(localIdnetifier)
+    }
+}
+
+extension Face {
+    func distance(to rhs: Face) -> Double {
+        var sum: Double = 0
+        for i in 0...meanEmbedded.count-1 {
+            sum += (pow(meanEmbedded[i] - rhs.meanEmbedded[i], 2))
+        }
+       return sqrt(sum)
+    }
 }
