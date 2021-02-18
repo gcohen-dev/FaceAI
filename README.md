@@ -94,7 +94,7 @@ switch result {
    }
 }
 ```
-![Screenshot](Screen Shot 2021-02-18 at 15.51.45.png)
+![Screenshot](fg2.png)
 
 # Face Grouping
 Collect people faces into groups
