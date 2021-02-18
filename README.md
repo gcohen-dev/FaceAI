@@ -9,3 +9,9 @@ FaceAI use 2 main features.
 - ios 13.0 
 - swift 5.1
 
+# Install
+SPM:
+```
+dependencies: [
+  .package(url:  "https://github.com/LA-Labs/FaceAI.git")
+]
