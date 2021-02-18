@@ -1,3 +1,4 @@
+![Screenshot](fr2.png)
 # FaceAI
 
 This package is aim to make using Apple Vision simple as possible.
