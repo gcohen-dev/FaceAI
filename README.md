@@ -31,7 +31,8 @@ import FaceAI
 
 ## Basic Usage
 ### Face detection 
-Loop over the photos gallery
+Before we start detecting. We need to decide what assets to fetch. Create ```AssetFetchingOptions``` for fetching request.
+Next we creating detection request with ```VFilter```. 
 ```swift 
 // Create default fetch options
 let options = AssetFetchingOptions()
