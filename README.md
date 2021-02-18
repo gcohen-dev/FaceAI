@@ -94,9 +94,11 @@ switch result {
    }
 }
 ```
-![Screenshot](fg3.png)
 
 # Face Grouping
+
+![Screenshot](fg3.png)
+
 Collect people faces into groups
 ```swift
 // Create photo fetech options
