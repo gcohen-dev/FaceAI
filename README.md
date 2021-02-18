@@ -14,5 +14,8 @@ FaceAI use 2 main features.
 SPM:
 ```
 dependencies: [
-  .package(url:  "https://github.com/LA-Labs/FaceAI.git")
+  .package(
+      url:  "https://github.com/LA-Labs/FaceAI.git",
+      .branch("master")
+  )
 ]
