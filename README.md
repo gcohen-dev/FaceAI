@@ -1,9 +1,9 @@
 # FaceAI
 
-This package is aim to make using Apple vision simple as possible.
+This package is aim to make using Apple Vision simple as possible.
 FaceAI use 2 main features.
-1. Creating vision operation pipe
-2. Creatiog stack operation over desire photos.
+1. Creating a Vision Operations Pipe.
+2. Creatiog a stack operation over desired photos.
 
 # Requirement
 - ios 13.0 
