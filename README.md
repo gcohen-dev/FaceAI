@@ -12,7 +12,7 @@ FaceAI use 2 main features.
 - Xcode 12.0+
 
 # Install
-SPM:
+### SPM:
 ```
 dependencies: [
   .package(
@@ -24,13 +24,14 @@ dependencies: [
 # Usage
 
 ## Import
-Import FaceAI Module to your class
+### Import FaceAI Module to your class
 ```swift 
 import FaceAI
 ```
 
 ## Basic Usage
-Face detection over the photos gallery
+### Face detection 
+Loop over the photos gallery
 ```swift 
 // Create default fetch options
 let options = AssetFetchingOptions()
@@ -50,14 +51,14 @@ FaceAI.detect(faceRectangle, with: options) { (result) in
 }
 ```
 
-###### Fetch options
+### Fetch options
 ```swift 
 let options = AssetFetchingOptions(sortDescriptors: [NSSortDescriptor]?,
                                    assetCollection: AssetCollection,
                                    fetchLimit: Int)
 ```
 
-###### Asset Collections
+### Asset Collections
 ```swift
 public enum AssetCollection {
     case allAssets
@@ -69,7 +70,7 @@ public enum AssetCollection {
 
 
 ## Multiple Requests
-Creating a pipe process
+### Creating a pipe process
 ```swift
 // Creating Face rectangle dection
 let faceRectangle = VFilter.faceRectangle()
@@ -99,7 +100,7 @@ switch result {
 
 ![Screenshot](fg3.png)
 
-Collect people faces into groups
+### Collect people faces into groups
 ```swift
 // Create photo fetech options
 let options = AssetFetchingOptions()
