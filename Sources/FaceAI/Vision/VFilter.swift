@@ -17,10 +17,6 @@ typealias CustomFilter<T> = (CustomProcessAsset) throws -> T
 
 public class VFilter {
     
-    struct Constant {
-        static let lowResImageArea: CGFloat = 1200
-    }
-    
     static func filter(type: VisionProcessType) -> VisionFilter {
         switch type {
         case .faceDetection:
@@ -87,7 +83,7 @@ public class VFilter {
             let faces = observations.compactMap { (observation) -> Face? in
                 let area = observation.boundingBox.size.scale(imageSize: asset.image.size).area
                 // remove low res face chip
-                if area < Constant.lowResImageArea {
+                if area < Defaults.shared.minimumFaceArea {
                     return nil
                 }
                 return Face(localIdnetifier: asset.identifier, faceID: "", faceCroppedImage: UIImage(), meanEmbedded: [], faceFeatures: observation, quality: 0)
@@ -103,10 +99,12 @@ public class VFilter {
     
     static func embbedFaces(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
-            let url = Bundle.module.url(forResource: "facenet_keras_weights_coreml", withExtension: ".mlmodelc")
-            let model = try facenet_keras_weights_coreml(contentsOf: url!, configuration: MLModelConfiguration()).model
+            guard let url = Bundle.module.url(forResource: "facenet_keras_weights_coreml", withExtension: ".mlmodelc") else {
+                fatalError("cant load face embbed model")
+            }
+            let model = try facenet_keras_weights_coreml(contentsOf: url, configuration: MLModelConfiguration()).model
             let request = VNCoreMLRequest(model: try VNCoreMLModel(for: model))
-            var faces = asset.faces.map({extractChip(face: $0, image: asset.image)})
+            var faces = asset.faces.map({ extractChip(face: $0, image: asset.image )})
             faces = try faces.map({ (face) -> Face in
                 let MLRequestHandler = VNImageRequestHandler(cgImage: face.faceCroppedImage.cgImage!, options: [:])
                 try MLRequestHandler.perform([request])
@@ -126,9 +124,6 @@ public class VFilter {
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNDetectFaceCaptureQualityRequest()
             try requestHandler.perform([request])
-//            guard let observation = request.results?.first as? VNFaceObservation else {
-//                throw FaceClustaringError.facesDetcting
-//            }
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
                                 tags: asset.tags,
