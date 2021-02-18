@@ -24,13 +24,13 @@ dependencies: [
 # Usage
 
 ## Import
-###### Import FaceAI Module to your class
+Import FaceAI Module to your class
 ```swift 
 import FaceAI
 ```
 
 ## Basic Usage
-###### Face detection over the photos gallery
+Face detection over the photos gallery
 ```swift 
 // Create default fetch options
 let options = AssetFetchingOptions()
@@ -69,7 +69,7 @@ public enum AssetCollection {
 
 
 ## Multiple Requests
-###### Creating a pipe process
+Creating a pipe process
 ```swift
 // Creating Face rectangle dection
 let faceRectangle = VFilter.faceRectangle()
@@ -99,7 +99,7 @@ switch result {
 
 ![Screenshot](fg3.png)
 
-###### Collect people faces into groups
+Collect people faces into groups
 ```swift
 // Create photo fetech options
 let options = AssetFetchingOptions()
