@@ -94,7 +94,7 @@ switch result {
    }
 }
 ```
-![Screenshot](fg2.png)
+![Screenshot](fg3.png)
 
 # Face Grouping
 Collect people faces into groups
