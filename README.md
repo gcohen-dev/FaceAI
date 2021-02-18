@@ -28,7 +28,7 @@ Import FaceAI module to your calss
 import FaceAI
 ```
 ## Basic Usage
-Face detection over the photo library
+Face detection over the photos gallery
 ```swift 
 let options = AssetFetchingOptions()
 let faceRectangle = VFilter.faceRectangle()
