@@ -7,11 +7,15 @@
 
 import Foundation
 
-public class ClusterServiceOptions {
-    var maxNumberOfAssetsToProcess: Int = Int.max
-    var assetsChunckSize: Int = 10
-    var minimumClusterSize: Int = 0
-    var maximumFaceDetected: Int = 50
-    var ascendingOrder: Bool = true
-    var faceSimilarityThreshold: Double = 0.7
+public struct ClusterOptions {
+    var minimumClusterSize: Int
+    var numberIterations: Int
+    var faceSimilarityThreshold: Double
+    public init(minimumClusterSize: Int = 5,
+         numberIterations: Int = 10,
+         faceSimilarityThreshold: Double = 0.7) {
+        self.minimumClusterSize = minimumClusterSize
+        self.numberIterations = numberIterations
+        self.faceSimilarityThreshold = faceSimilarityThreshold
+    }
 }

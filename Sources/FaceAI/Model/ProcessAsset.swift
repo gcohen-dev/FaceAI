@@ -14,7 +14,7 @@ protocol ProcessAssetsProtocol {
     var image: UIImage { get }
 }
 
-struct ProcessAsset: ProcessAssetsProtocol {
+public struct ProcessAsset: ProcessAssetsProtocol {
     let identifier: String
     let image: UIImage
     let tags: [String]

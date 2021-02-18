@@ -215,7 +215,7 @@ class facenet_keras_weights_coreml {
 
         - parameters:
            - input: the input to the prediction as facenet_keras_weights_coremlInput
-           - options: prediction options 
+           - options: prediction options
 
         - throws: an NSError object that describes the problem
 
@@ -246,7 +246,7 @@ class facenet_keras_weights_coreml {
 
         - parameters:
            - inputs: the inputs to the prediction as [facenet_keras_weights_coremlInput]
-           - options: prediction options 
+           - options: prediction options
 
         - throws: an NSError object that describes the problem
 

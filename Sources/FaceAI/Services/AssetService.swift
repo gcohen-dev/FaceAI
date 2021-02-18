@@ -8,6 +8,7 @@
 import Foundation
 import Photos
 import UIKit
+import LADSA
 
 class AssetService {
     
@@ -15,7 +16,7 @@ class AssetService {
     
     func stackAssets(with options: AssetFetchingOptions? = nil) -> Stack<[ProcessAsset]> {
          let assets = fetchAssets(with: options) |> assetParser
-         return chunk(assets: assets, usersAssets: 200, chunkSize: 10) |> stackAssets
+         return chunk(assets: assets, chunkSize: 10) |> stackAssets
     }
     
     /// Fetch assets from device gallery
@@ -33,8 +34,8 @@ private extension AssetService {
         return stack
     }
     
-    private func chunk(assets:[ProcessAsset], usersAssets:Int, chunkSize:Int) -> [[ProcessAsset]] {
-        assets.prefix(usersAssets).chunked(into: chunkSize)
+    private func chunk(assets:[ProcessAsset], chunkSize:Int) -> [[ProcessAsset]] {
+        assets.chunked(into: chunkSize)
     }
     
     func assetParser(asstes: PHFetchResult<PHAsset>) -> [ProcessAsset] {
@@ -56,15 +57,16 @@ private extension AssetService {
     func fetchAssets(with options: AssetFetchingOptions) -> PHFetchResult<PHAsset> {
         let fetchOption = PHFetchOptions()
         fetchOption.sortDescriptors = options.sortDescriptors
-//        fetchOption.predicate = options.predicate
+        fetchOption.fetchLimit = options.fetchLimit
+
         switch options.assetCollection {
         case .allAssets:
             return PHAsset.fetchAssets(with: fetchOption)
         case .albumName(let albumName):
-            fetchOption.predicate = NSPredicate(format: "title = %@", albumName)
-            let fetchResult: PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOption)
-            if fetchResult.firstObject == nil { fatalError("no album name:\(albumName) found)") }
-            return PHAsset.fetchAssets(in: fetchResult.firstObject!, options: fetchOption)
+            let fetchOptions = PHFetchOptions()
+            fetchOptions.predicate = NSPredicate(format: "title = %@", albumName)
+            let collection:PHFetchResult = PHAssetCollection.fetchAssetCollections(with: .album, subtype: .any, options: fetchOptions)
+            return PHAsset.fetchAssets(in: collection.firstObject!, options: fetchOption)
         case .assetCollection(let assetsCollection):
             return PHAsset.fetchAssets(in: assetsCollection, options: fetchOption)
         case .identifiers(let identifiers):

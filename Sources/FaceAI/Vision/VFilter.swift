@@ -10,24 +10,45 @@ import Vision
 import CoreML
 import UIKit
 
-typealias VisionFilter = (ProcessAsset) throws -> ProcessAsset
+typealias Pipe = (ProcessAsset) throws -> ProcessedAsset
+public typealias VisionFilter = (ProcessAsset) throws -> ProcessAsset
 typealias CustomFilter<T> = (CustomProcessAsset) throws -> T
 
 
-class ImageFilter {
+public class VFilter {
     
-    func filter(type: VisionProcessType) -> VisionFilter {
+    struct Constant {
+        static let lowResImageArea: CGFloat = 1200
+    }
+    
+    static func filter(type: VisionProcessType) -> VisionFilter {
         switch type {
         case .faceDetection:
-            return detectFaces
+            return faceRectangle()
         case .objectDetection:
             return tagPhoto
         case .imageQuality:
             return imageQuality
         case .imageFatching:
             return fetchAsset
-        case .cluster:
-            return featureDetection |>> embbedFaces
+        }
+    }
+    
+    public static func faceRectangle() -> VisionFilter {
+        return { asset in
+            return try faceRectangle(asset: asset)
+        }
+    }
+    
+    public static func objectDetection() -> VisionFilter {
+        return { asset in
+            return try tagPhoto(asset: asset)
+        }
+    }
+    
+    public static func imageQuality() -> VisionFilter {
+        return { asset in
+            return try imageQuality(asset: asset)
         }
     }
     
@@ -36,7 +57,7 @@ class ImageFilter {
     /// - Parameter asset: User image
     ///
     /// - Returns: ImageObservation struct include vision bounding rect, original image, and image size
-    private func detectFaces(asset: ProcessAsset) throws -> ProcessAsset {
+    private static func faceRectangle(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNDetectFaceRectanglesRequest()
@@ -44,8 +65,6 @@ class ImageFilter {
             guard let observations = request.results as? [VNFaceObservation] else {
                 throw VisionProcessError.facesDetcting
             }
-//            let url = SharedResource.faceModelURL
-
     //            guard !observations.isEmpty else {
 //                throw FaceClustaringError.emptyObservation
 //            }
@@ -56,32 +75,22 @@ class ImageFilter {
                                 faces: [])
         }
     }
-
-    private func fetchAsset(asset: ProcessAsset) throws -> ProcessAsset {
-        return autoreleasepool { () -> ProcessAsset in
-        let imageFetcher = ImageFetcherService()
-        if let image = imageFetcher.image(from: asset.identifier) {
-            return ProcessAsset(identifier: asset.identifier,
-                                image: image, tags: [],
-                                faceQuality: 0,
-                                observation: [],
-                                faces: [])
-        }
-            return ProcessAsset(identifier: asset.identifier, image: UIImage(), tags: [], faceQuality: 0, observation: [], faces: [])
-        }
-    }
     
-    private func featureDetection(asset: ProcessAsset) throws -> ProcessAsset {
+    static func featureDetection(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
-            
             let request = VNDetectFaceLandmarksRequest()
             try requestHandler.perform([request])
             guard let observations = request.results as? [VNFaceObservation] else {
                 throw VisionProcessError.facesDetcting
             }
-            let faces = observations.map { (observation) -> Face in
-                Face(localIdnetifier: asset.identifier, faceID: "", faceCroppedImage: UIImage(), meanEmbedded: [], faceFeatures: observation, quality: 0)
+            let faces = observations.compactMap { (observation) -> Face? in
+                let area = observation.boundingBox.size.scale(imageSize: asset.image.size).area
+                // remove low res face chip
+                if area < Constant.lowResImageArea {
+                    return nil
+                }
+                return Face(localIdnetifier: asset.identifier, faceID: "", faceCroppedImage: UIImage(), meanEmbedded: [], faceFeatures: observation, quality: 0)
             }
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
@@ -92,7 +101,7 @@ class ImageFilter {
         }
     }
     
-    private func embbedFaces(asset: ProcessAsset) throws -> ProcessAsset {
+    static func embbedFaces(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
             let url = Bundle.module.url(forResource: "facenet_keras_weights_coreml", withExtension: ".mlmodelc")
             let model = try facenet_keras_weights_coreml(contentsOf: url!, configuration: MLModelConfiguration()).model
@@ -112,7 +121,7 @@ class ImageFilter {
         }
     }
     
-    private func imageQuality(asset: ProcessAsset) throws -> ProcessAsset {
+    static func imageQuality(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNDetectFaceCaptureQualityRequest()
@@ -129,7 +138,7 @@ class ImageFilter {
         }
     }
     
-    private func tagPhoto(asset: ProcessAsset) throws -> ProcessAsset {
+    static func tagPhoto(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNClassifyImageRequest()
@@ -151,7 +160,7 @@ class ImageFilter {
         }
     }
     
-    func custom<T>(model: MLModel) -> CustomFilter<T> {
+    static func custom<T>(model: MLModel) -> CustomFilter<T> {
         return { asset in
             return try autoreleasepool { () -> T in
                 guard let model = try? VNCoreMLModel(for: model) else {
@@ -169,30 +178,55 @@ class ImageFilter {
         }
     }
     
-    private func mapBoundignBoxToRects(observation: [VNFaceObservation]) -> [CGRect] {
+    // Fetch image from PHAsset
+    static func fetchAsset(asset: ProcessAsset) throws -> ProcessAsset {
+        return autoreleasepool { () -> ProcessAsset in
+        let imageFetcher = ImageFetcherService()
+        if let image = imageFetcher.image(from: asset.identifier) {
+            return ProcessAsset(identifier: asset.identifier,
+                                image: image, tags: [],
+                                faceQuality: 0,
+                                observation: [],
+                                faces: [])
+        }
+            return ProcessAsset(identifier: asset.identifier, image: UIImage(), tags: [], faceQuality: 0, observation: [], faces: [])
+        }
+    }
+    
+    // Convert PocessAsset To ProcessedAsset
+    // Remove main image to reduce ram print
+    static func clean(asset: ProcessAsset) throws -> ProcessedAsset {
+        ProcessedAsset(asset: asset)
+    }
+}
+
+private extension VFilter {
+    
+    static func mapBoundignBoxToRects(observation: [VNFaceObservation]) -> [CGRect] {
         observation.map(convertRect)
     }
     
-    private func convertRect(face: VNFaceObservation) -> CGRect {
+    static func convertRect(face: VNFaceObservation) -> CGRect {
         return face.boundingBox
     }
     
-    private func genEmbeddingsHandler(face: Face, request: VNRequest) -> Face {
-        guard let observations = request.results as? [ VNCoreMLFeatureValueObservation] , let firstObserve = observations.first,
-            let emb = firstObserve.featureValue.multiArrayValue else {
+    static func genEmbeddingsHandler(face: Face, request: VNRequest) -> Face {
+        guard let observations = request.results as? [ VNCoreMLFeatureValueObservation] ,
+              let firstObserve = observations.first,
+              let emb = firstObserve.featureValue.multiArrayValue else {
             return face
         }
-        let embbeded = buffer2Array(length: emb.count, data: emb.dataPointer, Double.self) |> norm_l2
+        let embbeded =  [buffer2Array(length: emb.count, data: emb.dataPointer, Double.self)]  |> average |> norm_l2
         return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: face.faceCroppedImage, meanEmbedded: embbeded, faceFeatures: face.faceFeatures, quality: face.quality)
     }
     
-    private func buffer2Array<T>(length: Int, data: UnsafeMutableRawPointer, _: T.Type) -> [T] {
+    static func buffer2Array<T>(length: Int, data: UnsafeMutableRawPointer, _: T.Type) -> [T] {
         let ptr = data.bindMemory(to: T.self, capacity: length)
         let buffer = UnsafeBufferPointer(start: ptr, count: length)
         return Array(buffer)
     }
     
-    private func norm_l2(emb: [Double]) -> [Double] {
+    static func norm_l2(emb: [Double]) -> [Double] {
         let sum: Double = emb.reduce(0) { (result, next) in
             return result + next * next
         }
@@ -200,7 +234,22 @@ class ImageFilter {
         return emb
     }
     
-    func extractChip(face: Face, image: UIImage) -> Face {
+    static func average(arrays: [[Double]] ) -> [Double] {
+        var average:[Double] = []
+        if !(arrays.count > 0) {
+            return arrays.first!
+        }
+        for i in 0...arrays.first!.count - 1 {
+            var columSum:Double = 0.0
+            for j in 0...arrays.count - 1 {
+                 columSum += arrays[j][i]
+            }
+            average.append(columSum/Double(arrays.count))
+        }
+        return average
+    }
+    
+    static func extractChip(face: Face, image: UIImage) -> Face {
         let chipImage = Interpulation.extractImageChip(image, chipDetail: Interpulation.getFaceChipDetails(det: face.faceFeatures, imageSize: image.size, size: 160, padding: 0.4), observation: face.faceFeatures) ?? UIImage()
         return Face(localIdnetifier: face.localIdnetifier,
              faceID: face.faceID,

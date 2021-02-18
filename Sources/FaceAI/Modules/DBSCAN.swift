@@ -22,7 +22,6 @@ class DBSCAN<T:Hashable> {
     }
     
     func DBSCAN(distFunc: (T,T)->Double, eps: Double, minPts: Int) {
-        
         var C = 0
         for P in self.db {
             

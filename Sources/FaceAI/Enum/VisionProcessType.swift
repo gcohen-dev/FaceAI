@@ -8,10 +8,9 @@
 
 import Foundation
 
-enum VisionProcessType {
+public enum VisionProcessType {
     case imageFatching
     case faceDetection
     case objectDetection
     case imageQuality
-    case cluster
 }

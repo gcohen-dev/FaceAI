@@ -24,7 +24,7 @@ func >> <U, T, Z> (f: @escaping (U) ->T, g: @escaping (T)->Z) -> (U)->Z {
 
 // declare new operator
 infix operator |>> : ComparisonPrecedence
-func |>> <U, T, Z> (f: @escaping (U) throws ->T, g: @escaping (T) throws -> Z) -> (U) throws -> Z {
+public func |>> <U, T, Z> (f: @escaping (U) throws ->T, g: @escaping (T) throws -> Z) -> (U) throws -> Z {
     return {try g(try f($0)) }
 }
 

@@ -17,7 +17,8 @@ class Interpulation {
                           chipDetail: ChipDetails,
                           observation: VNFaceObservation) -> UIImage? {
         guard let image = rotate(image: image,
-                                chipDetail: chipDetail, observation: observation) else {
+                                chipDetail: chipDetail,
+                                observation: observation) else {
             return nil
         }
         guard let croppedImage = crop(image: image,
@@ -25,14 +26,14 @@ class Interpulation {
                                              size: chipDetail.rect.size)) else {
             return nil
         }
-        return scale(image: croppedImage, targetSize: CGSize(width: 160, height: 160))
+        return croppedImage
     }
     
     static func getFaceChipDetails(det: VNFaceObservation,
                             imageSize: CGSize,
                             size: Double = 200,
                             padding: Double = 0.2) -> ChipDetails {
-        let featurePointsVectors = det.facePointsVectors5(in: imageSize)
+        let featurePointsVectors = det.facePointsVectors68(in: imageSize)
         return getChipDetails(toPoints: featurePointsVectors, size: size, padding: padding)
     }
     
@@ -132,11 +133,11 @@ private extension Interpulation {
 
         let idealPoints = getFaceParts5(size: simd_double2(size, size),
                                                      padding: padding)
-//        let points = getFaceParts68(size: simd_double2(size, size), padding: padding)
+        let points = getFaceParts68(size: simd_double2(size, size), padding: padding)
         
-        let chipDetail = ChipDetails(fromPoint: idealPoints ,
-                                                   toPoint: toPoints,
-                                                   chipDims: simd_double2(size, size))
+        let chipDetail = ChipDetails(fromPoint: points,
+                                                toPoint: toPoints,
+                                                chipDims: simd_double2(size, size))
         return chipDetail
     }
     
@@ -210,10 +211,9 @@ private extension Interpulation {
             if (49 == i || 53 == i || 60 == i || 64 == i) {
                 continue
             }
-            print(i)
             let x = (padding+mean_face_shape_x[i-17])/(2*padding+1)
             let y = (padding+mean_face_shape_y[i-17])/(2*padding+1)
-            points.append(simd_double2(x, y))
+            points.append(simd_double2(x, y)*size)
         }
         return points
     }

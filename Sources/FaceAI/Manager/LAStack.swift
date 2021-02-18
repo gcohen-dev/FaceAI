@@ -7,6 +7,7 @@
 
 import Foundation
 import Photos
+import LADSA
 
 typealias SinglePipe<Input,Output> = (Input) throws -> Output
 typealias MultiplePipe<Input,Output> = ([Input]) throws -> [Output]
@@ -15,8 +16,9 @@ typealias GenericStackProcessor<Input,Output> = (Stack<[Input]>) throws -> [Outp
 typealias Processor = ([ProcessAsset]) throws -> [ProcessAsset]
 typealias StackProcessor = (Stack<[ProcessAsset]>) throws -> [ProcessAsset]
 
-class ImageProcessor {
-        
+class LAStack {
+    
+    static var queue = DispatchQueue(label: "com.faceAi.la-labs")
     /// Create opertion queue to process all assets.
     /// - Return analized objects
     /// - Parameter images: User Images
@@ -49,7 +51,9 @@ class ImageProcessor {
             return BlockOperation {
                 do {
                     let object = try preformOn(image)
-                    objects.append(object)
+                    self.queue.async {
+                        objects.append(object)
+                    }
                 }catch {
                     //TODO: handle error
                 }

@@ -15,7 +15,7 @@ let package = Package(
     dependencies: [
             .package(
                 url: "https://github.com/LA-Labs/LADSA.git",
-                from: "1.0.0"
+                .branch("main")
             )
     ],
     targets: [
@@ -23,7 +23,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
             name: "FaceAI",
-            dependencies: [],
+            dependencies: ["LADSA"],
             resources: [.process("facenet_keras_weights_coreml.mlmodelc")])
     ]
 )
