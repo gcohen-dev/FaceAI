@@ -24,7 +24,6 @@ dependencies: [
 # Usage
 
 ## Import
-### Import FaceAI Module to your class
 ```swift 
 import FaceAI
 ```
