@@ -23,20 +23,67 @@ dependencies: [
 ```
 # Usage
 ## Import
-Import FaceAI module to your calss
+Import FaceAI Module to your class
 ```swift 
 import FaceAI
 ```
 ## Basic Usage
 Face detection over the photos gallery
 ```swift 
+// Create default fetch options
 let options = AssetFetchingOptions()
+
+// Create image processing request
 let faceRectangle = VFilter.faceRectangle()
 FaceAI.detect(faceRectangle, with: options) { (result) in
    switch result {
    // The result type is ProcessedAsset
    // Containt all photos with face recatangle detection
    // photos[0].boundingBoxes
+      case .success(let photos):
+          print(photos)
+      case .failure(let error):
+          print(error)
+   }
+}
+```
+
+Fetch options
+```swift 
+let options = AssetFetchingOptions(sortDescriptors: [NSSortDescriptor]?,
+                                   assetCollection: AssetCollection,
+                                   fetchLimit: Int)
+```
+
+Asset Collections
+```swift
+public enum AssetCollection {
+    case allAssets
+    case albumName(_ name: String)
+    case assetCollection(_ collection: PHAssetCollection)
+    case identifiers(_ ids: [String])
+}
+```
+
+## Multiple Requests
+Creating a pipe process
+```swift
+// Creating Face rectangle dection
+let faceRectangle = VFilter.faceRectangle()
+        
+// Creation Object Dection.
+// Sky, flower, water etc.
+let objectDetecting = VFilter.objectDetecting()
+
+// Combine to pipe processing
+// Every image will go through the pipe.
+let pipeProcessing = faceRectangle |>> objectDetecting
+FaceAI.detect(pipeProcessing, with: options) { (result) in
+switch result {
+   // The result type is ProcessedAsset
+   // Containt all photos with face recatangle detection
+   // photos[0].boundingBoxes
+   // photos[0].tags
       case .success(let photos):
           print(photos)
       case .failure(let error):
