@@ -22,11 +22,13 @@ dependencies: [
 ]
 ```
 # Usage
+
 ## Import
 Import FaceAI Module to your class
 ```swift 
 import FaceAI
 ```
+
 ## Basic Usage
 Face detection over the photos gallery
 ```swift 
@@ -65,6 +67,7 @@ public enum AssetCollection {
 }
 ```
 
+
 ## Multiple Requests
 Creating a pipe process
 ```swift
@@ -89,5 +92,29 @@ switch result {
       case .failure(let error):
           print(error)
    }
+}
+```
+
+
+# Face Grouping
+Collect people faces into groups
+```swift
+// Create photo fetech options
+let options = AssetFetchingOptions()
+        
+// Create cluster options
+let clusterOptions = ClusterOptions()
+FaceAI.cluster(fetchOptions: options,
+               culsterOptions: clusterOptions) { (result) in
+     // Result contian group faces
+     // [Int: [Face]]
+     // Key = group id
+     // Value = Same people faces
+     switch result {
+        case .success(let faces):
+           print(faces)
+        case .failure(_):
+           break
+     }
 }
 ```
