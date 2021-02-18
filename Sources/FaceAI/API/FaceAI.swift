@@ -44,6 +44,7 @@ public final class FaceAI {
                 let faces = photos.flatMap { (asset) -> [Face] in
                     asset.faces
                 }
+                print("Number of faces found: \(faces.count)")
                 let labels = ChineseWhispers.chinese_whispers(faces: faces,
                                                               eps: culsterOptions.faceSimilarityThreshold,
                                                               numIterations: culsterOptions.numberIterations)
