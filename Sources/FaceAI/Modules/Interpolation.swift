@@ -33,7 +33,8 @@ class Interpulation {
                             imageSize: CGSize,
                             size: Double = 200,
                             padding: Double = 0.2) -> ChipDetails {
-        let featurePointsVectors = det.facePointsVectors68(in: imageSize)
+        let featurePointsVectors = Defaults.shared.featurePointsAlgorithm == .points76 ? det.facePointsVectors76(in: imageSize) :
+            det.facePointsVectors5(in: imageSize)
         return getChipDetails(toPoints: featurePointsVectors, size: size, padding: padding)
     }
     
@@ -85,13 +86,15 @@ private extension Interpulation {
         context?.saveGState()
         context?.setStrokeColor(UIColor.red.cgColor)
 
-        observation.facePointsVectors68(in: image.size)
-            .map({$0.toPoint()})
-            .forEach { (point) in
-            context?.addArc(center: point, radius: 1,
-                                startAngle: 0.0, endAngle: .pi * 2.0, clockwise: true)
-            context?.strokePath()
-            context?.saveGState()
+        if Defaults.shared.drawFeaturePoints {
+            observation.facePointsVectors76(in: image.size)
+                .map({$0.toPoint()})
+                .forEach { (point) in
+                    context?.addArc(center: point, radius: 1,
+                                    startAngle: 0.0, endAngle: .pi * 2.0, clockwise: true)
+                    context?.strokePath()
+                    context?.saveGState()
+                }
         }
         
         // get the final image
@@ -131,9 +134,9 @@ private extension Interpulation {
     
     static func getChipDetails(toPoints: [simd_double2], size: Double, padding: Double) -> ChipDetails {
 
-        let idealPoints = getFaceParts5(size: simd_double2(size, size),
-                                                     padding: padding)
-        let points = getFaceParts68(size: simd_double2(size, size), padding: padding)
+        let points = Defaults.shared.featurePointsAlgorithm == .points76 ?
+            getFaceParts68(size: simd_double2(size, size), padding: padding) :
+            getFaceParts5(size: simd_double2(size, size),padding: padding)
         
         let chipDetail = ChipDetails(fromPoint: points,
                                                 toPoint: toPoints,

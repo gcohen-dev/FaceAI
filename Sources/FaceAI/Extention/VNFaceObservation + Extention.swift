@@ -20,7 +20,7 @@ extension VNFaceObservation {
         }).map({$0.toVector()})
     }
     
-    func facePointsVectors68(in imageSize: CGSize) -> [simd_double2] {
+    func facePointsVectors76(in imageSize: CGSize) -> [simd_double2] {
         guard let allPoints = self.landmarks?.allPoints, allPoints.pointCount == 76 else {
             fatalError("You have to give a 5 point face landmarking output to this function.")
         }
