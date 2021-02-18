@@ -12,7 +12,7 @@ public struct ClusterOptions {
     var numberIterations: Int
     var faceSimilarityThreshold: Double
     public init(minimumClusterSize: Int = 5,
-         numberIterations: Int = 10,
+         numberIterations: Int = 100,
          faceSimilarityThreshold: Double = 0.7) {
         self.minimumClusterSize = minimumClusterSize
         self.numberIterations = numberIterations
