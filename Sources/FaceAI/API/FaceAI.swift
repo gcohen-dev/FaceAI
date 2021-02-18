@@ -18,8 +18,8 @@ public final class FaceAI {
     private static let service = AssetService()
 
     //MARK: Public API
-    public static func detect(options: AssetFetchingOptions,
-                              pipe: @escaping VisionFilter,
+    public static func detect(_ pipe: @escaping VisionFilter,
+                              with options: AssetFetchingOptions,
                               completion: @escaping (Result<[ProcessedAsset], VisionProcessError>) -> Void) {
         let assets = service.stackAssets(with: options)
         detect(objects: assets, pipe: pipe, completion: { result in
@@ -34,9 +34,9 @@ public final class FaceAI {
         })
     }
     
-    public static func cluster(options: AssetFetchingOptions,
+    public static func cluster(fetchOptions: AssetFetchingOptions,
                                culsterOptions: ClusterOptions, completion: @escaping (Result<[Int: [Face]], VisionProcessError>) -> Void) {
-        let assets = service.stackAssets(with: options)
+        let assets = service.stackAssets(with: fetchOptions)
         let cluster =  VFilter.featureDetection |>> VFilter.embbedFaces
         detect(objects: assets, pipe: cluster, completion: { result in
             switch result {

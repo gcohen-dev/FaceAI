@@ -9,9 +9,9 @@ import UIKit
 
 public struct ProcessedAsset: Hashable {
     public let localIdentifier: String
-    let faceQuality: Float
-    let categories: [String]
-    let boundingBoxes: [CGRect]
+    public let faceQuality: Float
+    public let categories: [String]
+    public let boundingBoxes: [CGRect]
     public let faces: [Face]
     
     public func hash(into hasher: inout Hasher) {

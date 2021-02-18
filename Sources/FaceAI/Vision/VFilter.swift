@@ -36,7 +36,7 @@ public class VFilter {
         }
     }
     
-    public static func objectDetection() -> VisionFilter {
+    public static func objectDetecting() -> VisionFilter {
         return { asset in
             return try tagPhoto(asset: asset)
         }
