@@ -4,7 +4,7 @@
 This package is aim to make using Computer Vision simple as possible.
 FaceAI use 2 main features.
 1. Creating a Vision Operations Pipe.
-2. Creating a stack operation over desired photos.
+2. Creating a Stack Operation over desired photos.
 
 # Requirement
 - ios 13.0 
