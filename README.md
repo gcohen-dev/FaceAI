@@ -30,29 +30,17 @@ import FaceAI
 
 ## Basic Usage
 ### Face detection 
-Before we start detecting. We need to decide what assets to fetch. Create ```AssetFetchingOptions``` for fetching request.
-Next we creating detection request with ```VFilter```. 
+
+### Fetch options
+Before we start detecting, We need to decide what assets we want to fetch. 
+Create ```AssetFetchingOptions``` for fetching request.
 ```swift 
 // Create default fetch options
 let options = AssetFetchingOptions()
-
-// Create image processing request
-let faceRectangle = VFilter.faceRectangle()
-FaceAI.detect(faceRectangle, with: options) { (result) in
-   switch result {
-   // The result type is ProcessedAsset
-   // Containt all photos with face recatangle detection
-   // photos[0].boundingBoxes
-      case .success(let photos):
-          print(photos)
-      case .failure(let error):
-          print(error)
-   }
-}
 ```
 
-### Fetch options
-```swift 
+Custom ```AssetFetchingOptions``` for fetching request.
+```swift
 let options = AssetFetchingOptions(sortDescriptors: [NSSortDescriptor]?,
                                    assetCollection: AssetCollection,
                                    fetchLimit: Int)
@@ -65,6 +53,30 @@ public enum AssetCollection {
     case albumName(_ name: String)
     case assetCollection(_ collection: PHAssetCollection)
     case identifiers(_ ids: [String])
+}
+```
+
+### Create filter
+Next we need to create detection request with ```VFilter```. 
+```swift 
+// Create image processing request
+let faceRectangle = VFilter.faceRectangle()
+````
+
+
+### Detect
+Call FaceAI detecotor with the filter request and fetch options.
+```swift 
+FaceAI.detect(faceRectangle, with: options) { (result) in
+   switch result {
+   // The result type is ProcessedAsset
+   // Containt all photos with face recatangle detection
+   // photos[0].boundingBoxes
+      case .success(let photos):
+          print(photos)
+      case .failure(let error):
+          print(error)
+   }
 }
 ```
 
@@ -121,3 +133,8 @@ FaceAI.cluster(fetchOptions: options,
      }
 }
 ```
+
+
+
+# Contributing
+We don't have any contributing guidelines at the moment, but feel free to submit pull requests & file issues within GitHub!
