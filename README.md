@@ -21,12 +21,11 @@ dependencies: [
   )
 ]
 ```
-# Usage
-
 ## Import
 ```swift 
 import FaceAI
 ```
+# Usage
 
 ## Basic Usage
 ### Fetch options
