@@ -29,8 +29,6 @@ import FaceAI
 ```
 
 ## Basic Usage
-### Face detection 
-
 ### Fetch options
 Before we start detecting, We need to decide what assets we want to fetch. 
 Create ```AssetFetchingOptions``` for fetching request.
@@ -64,7 +62,7 @@ let faceRectangle = VFilter.faceRectangle()
 ````
 
 
-### Detect
+### Face detection 
 Call FaceAI detecotor with the filter request and fetch options.
 ```swift 
 FaceAI.detect(faceRectangle, with: options) { (result) in
