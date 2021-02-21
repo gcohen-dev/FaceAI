@@ -109,7 +109,7 @@ switch result {
 
 # Face Grouping
 
-![Screenshot](fg3.png)
+![](ezgif.com-resize.gif)
 
 ### Collect people faces into groups
 ```swift
