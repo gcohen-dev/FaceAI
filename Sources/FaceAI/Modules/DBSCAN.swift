@@ -15,13 +15,13 @@ class DBSCAN<T:Hashable> {
     init(aDB:[T])  {
         
         db = aDB
-        label = [T:String]()
+        label = [T: String]()
         for P in db {
             self.label[P] = "undefined"
         }
     }
     
-    func DBSCAN(distFunc: (T,T)->Double, eps: Double, minPts: Int) {
+    func DBSCAN(distFunc: (T, T)->Double, eps: Double, minPts: Int) {
         var C = 0
         for P in self.db {
             

@@ -123,7 +123,7 @@ class ChineseWhispers {
         return labels
     }
     
-    static func group(faces: [Face], labels: [Int]) -> [Int: [Face]] {
+    static func group(faces: [Face], labels: [Int]) -> [FaceClusters] {
         var cluster: [Int : [Face]] = [:]
         for (i, value) in labels.enumerated() {
             if cluster[value] != nil {
@@ -132,6 +132,8 @@ class ChineseWhispers {
                 cluster[value] = [faces[i]]
             }
         }
-        return cluster
+        return cluster.map { (key, value) -> FaceClusters in
+            FaceClusters(faceID: key, faces: value)
+        }
     }
 }

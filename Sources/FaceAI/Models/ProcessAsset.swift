@@ -18,8 +18,7 @@ public struct ProcessAsset: ProcessAssetsProtocol {
     let identifier: String
     let image: UIImage
     let tags: [String]
-    let faceQuality: Float
-    let observation: [CGRect]
+    let boundingBoxes: [CGRect]
     let faces: [Face]
 }
 
@@ -28,9 +27,7 @@ struct CustomProcessAsset: ProcessAssetsProtocol {
     let image: UIImage
 }
 
-
-
-struct FaceClusters {
-    let faceID: String
-    let faces: [Face]
+public struct FaceClusters {
+    public let faceID: Int
+    public let faces: [Face]
 }

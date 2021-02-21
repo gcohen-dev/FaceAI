@@ -45,8 +45,7 @@ private extension AssetService {
                 let asset = ProcessAsset(identifier: asset.localIdentifier,
                                          image: UIImage(),
                                          tags: [],
-                                         faceQuality: 0,
-                                         observation: [],
+                                         boundingBoxes: [],
                                          faces: [])
                 assets.append(asset)
             }
@@ -55,10 +54,10 @@ private extension AssetService {
     }
     
     func fetchAssets(with options: AssetFetchingOptions) -> PHFetchResult<PHAsset> {
+        precondition(PHPhotoLibrary.authorizationStatus() == .authorized, "You need to get Photos permissions first.")
         let fetchOption = PHFetchOptions()
         fetchOption.sortDescriptors = options.sortDescriptors
         fetchOption.fetchLimit = options.fetchLimit
-
         switch options.assetCollection {
         case .allAssets:
             return PHAsset.fetchAssets(with: fetchOption)

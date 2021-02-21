@@ -35,22 +35,23 @@ public final class FaceAI {
     }
     
     public static func cluster(fetchOptions: AssetFetchingOptions,
-                               culsterOptions: ClusterOptions, completion: @escaping (Result<[Int: [Face]], VisionProcessError>) -> Void) {
+                               culsterOptions: ClusterOptions, completion: @escaping (Result<[FaceClusters], VisionProcessError>) -> Void) {
         let assets = service.stackAssets(with: fetchOptions)
-        let cluster =  VFilter.featureDetection |>> VFilter.embbedFaces
+        let cluster =  VFilter.featureDetection |>> VFilter.imageQuality |>> VFilter.embbedFaces
+        let startDate = Date()
         detect(objects: assets, pipe: cluster, completion: { result in
             switch result {
             case .success(let photos):
                 let faces = photos.flatMap { (asset) -> [Face] in
                     asset.faces
                 }
-                print("Number of faces found: \(faces.count)")
                 let labels = ChineseWhispers.chinese_whispers(faces: faces,
                                                               eps: culsterOptions.faceSimilarityThreshold,
                                                               numIterations: culsterOptions.numberIterations)
                 
                 let groupFaces = ChineseWhispers.group(faces: faces,
-                                                       labels: labels)
+                                                       labels: labels).filter({$0.faces.count > culsterOptions.minimumClusterSize })
+                print("Finish clustering in: \(startDate.timeIntervalSinceNow * -1) second\nTotal number of faces: \(faces.count)\nTotal number of clusters: \(groupFaces.count)")
                 completion(.success(groupFaces))
 
                 

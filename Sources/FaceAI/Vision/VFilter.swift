@@ -66,8 +66,7 @@ public class VFilter {
 //            }
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image, tags: asset.tags,
-                                faceQuality: asset.faceQuality,
-                                observation: mapBoundignBoxToRects(observation: observations),
+                                boundingBoxes: mapBoundignBoxToRects(observation: observations),
                                 faces: [])
         }
     }
@@ -76,6 +75,11 @@ public class VFilter {
         return try autoreleasepool { () -> ProcessAsset in
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNDetectFaceLandmarksRequest()
+            if !asset.faces.isEmpty {
+                request.inputFaceObservations = asset.faces.map({ (face) -> VNFaceObservation in
+                    face.faceObservation
+                })
+            }
             try requestHandler.perform([request])
             guard let observations = request.results as? [VNFaceObservation] else {
                 throw VisionProcessError.facesDetcting
@@ -86,13 +90,12 @@ public class VFilter {
                 if area < Defaults.shared.minimumFaceArea {
                     return nil
                 }
-                return Face(localIdnetifier: asset.identifier, faceID: "", faceCroppedImage: UIImage(), meanEmbedded: [], faceFeatures: observation, quality: 0)
+                return Face(localIdnetifier: asset.identifier, faceID: "", faceCroppedImage: UIImage(), meanEmbedded: [], faceObservation: observation, quality: 0)
             }
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
                                 tags: asset.tags,
-                                faceQuality: asset.faceQuality,
-                                observation: mapBoundignBoxToRects(observation: observations),
+                                boundingBoxes: mapBoundignBoxToRects(observation: observations),
                                 faces: faces)
         }
     }
@@ -113,23 +116,45 @@ public class VFilter {
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
                                 tags: asset.tags,
-                                faceQuality: asset.faceQuality,
-                                observation: asset.observation,
+                                boundingBoxes: asset.boundingBoxes,
                                 faces: faces)
         }
     }
     
     static func imageQuality(asset: ProcessAsset) throws -> ProcessAsset {
         return try autoreleasepool { () -> ProcessAsset in
+            if Defaults.shared.minimumFaceScoring == 1.0 {
+                return asset
+            }
             let requestHandler = VNImageRequestHandler(cgImage: (asset.image.cgImage!), options: [:])
             let request = VNDetectFaceCaptureQualityRequest()
+            if !asset.faces.isEmpty {
+                request.inputFaceObservations = asset.faces.map({ (face) -> VNFaceObservation in
+                    face.faceObservation
+                })
+            }
             try requestHandler.perform([request])
+            guard let observations = request.results as? [VNFaceObservation] else {
+                throw VisionProcessError.facesDetcting
+            }
+            guard observations.count == asset.faces.count else {
+                return ProcessAsset(identifier: asset.identifier,
+                                    image: asset.image,
+                                    tags: asset.tags,
+                                    boundingBoxes: asset.boundingBoxes,
+                                    faces: asset.faces)
+            }
+            let faces = zip(asset.faces, observations).compactMap { (face, observation) -> Face? in
+                if observation.faceCaptureQuality ?? 0 < Defaults.shared.minimumFaceScoring {
+                    return nil
+                }
+                return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: face.faceCroppedImage, meanEmbedded: face.meanEmbedded, faceObservation: observation, quality: observation.faceCaptureQuality ?? 0)
+            }
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
                                 tags: asset.tags,
-                                faceQuality: (request.results?.first as? VNFaceObservation)?.faceCaptureQuality ?? 0,
-                                observation: asset.observation,
-                                faces: [])
+                                boundingBoxes: asset.boundingBoxes,
+                                faces: faces)
         }
     }
     
@@ -149,8 +174,7 @@ public class VFilter {
             return ProcessAsset(identifier: asset.identifier,
                                 image: asset.image,
                                 tags: categories,
-                                faceQuality: asset.faceQuality,
-                                observation: asset.observation,
+                                boundingBoxes: asset.boundingBoxes,
                                 faces: [])
         }
     }
@@ -180,11 +204,14 @@ public class VFilter {
         if let image = imageFetcher.image(from: asset.identifier) {
             return ProcessAsset(identifier: asset.identifier,
                                 image: image, tags: [],
-                                faceQuality: 0,
-                                observation: [],
+                                boundingBoxes: [],
                                 faces: [])
         }
-            return ProcessAsset(identifier: asset.identifier, image: UIImage(), tags: [], faceQuality: 0, observation: [], faces: [])
+            return ProcessAsset(identifier: asset.identifier,
+                                image: UIImage(),
+                                tags: [],
+                                boundingBoxes: [],
+                                faces: [])
         }
     }
     
@@ -212,7 +239,7 @@ private extension VFilter {
             return face
         }
         let embbeded =  [buffer2Array(length: emb.count, data: emb.dataPointer, Double.self)]  |> average |> norm_l2
-        return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: face.faceCroppedImage, meanEmbedded: embbeded, faceFeatures: face.faceFeatures, quality: face.quality)
+        return Face(localIdnetifier: face.localIdnetifier, faceID: face.faceID, faceCroppedImage: face.faceCroppedImage, meanEmbedded: embbeded, faceObservation: face.faceObservation, quality: face.quality)
     }
     
     static func buffer2Array<T>(length: Int, data: UnsafeMutableRawPointer, _: T.Type) -> [T] {
@@ -245,12 +272,12 @@ private extension VFilter {
     }
     
     static func extractChip(face: Face, image: UIImage) -> Face {
-        let chipImage = Interpulation.extractImageChip(image, chipDetail: Interpulation.getFaceChipDetails(det: face.faceFeatures, imageSize: image.size, size: 160, padding: 0.4), observation: face.faceFeatures) ?? UIImage()
+        let chipImage = Interpulation.extractImageChip(image, chipDetail: Interpulation.getFaceChipDetails(det: face.faceObservation, imageSize: image.size, size: 160, padding: 0.4), observation: face.faceObservation) ?? UIImage()
         return Face(localIdnetifier: face.localIdnetifier,
              faceID: face.faceID,
              faceCroppedImage: chipImage,
              meanEmbedded: face.meanEmbedded,
-             faceFeatures: face.faceFeatures,
+             faceObservation: face.faceObservation,
              quality: face.quality)
     }
 }

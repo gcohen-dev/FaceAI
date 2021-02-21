@@ -9,7 +9,6 @@ import UIKit
 
 public struct ProcessedAsset: Hashable {
     public let localIdentifier: String
-    public let faceQuality: Float
     public let categories: [String]
     public let boundingBoxes: [CGRect]
     public let faces: [Face]
@@ -19,9 +18,8 @@ public struct ProcessedAsset: Hashable {
     }
     init(asset: ProcessAsset) {
         self.localIdentifier = asset.identifier
-        self.faceQuality = asset.faceQuality
         self.categories = asset.tags
-        self.boundingBoxes = asset.observation
+        self.boundingBoxes = asset.boundingBoxes
         self.faces = asset.faces
     }
 }

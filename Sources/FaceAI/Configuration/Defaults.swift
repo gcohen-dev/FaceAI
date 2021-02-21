@@ -31,6 +31,7 @@ class Defaults {
     
     var minimumFaceArea: CGFloat = 1200
     var featurePointsAlgorithm: FeaturePoints = .points76
+    var minimumFaceScoring: Float = 0.3
     
     
     //MARK: Debug

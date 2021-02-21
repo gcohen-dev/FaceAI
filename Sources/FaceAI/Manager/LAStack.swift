@@ -29,7 +29,9 @@ class LAStack {
             return BlockOperation {
                 do {
                     let processedObject = try preformOn(input)
-                    objects.append(contentsOf: processedObject)
+                    self.queue.async {
+                        objects.append(contentsOf: processedObject)
+                    }
                 }catch {
                     //TODO: handle error
                 }
@@ -81,10 +83,13 @@ class LAStack {
             if let asssts = stack.pop() {
                 do {
                     let detectObjects = try processor(asssts)
-                    objects.append(contentsOf: detectObjects)
+                    queue.async {
+                        objects.append(contentsOf: detectObjects)
+                        print("Finish \(asssts.count) photos in: \(startDate.timeIntervalSinceNow * -1) second")
+                    }
                 }catch {   }
             }
-            print("finish round in: \(startDate.timeIntervalSinceNow * -1) sconed")
+
         }
         return objects
     }

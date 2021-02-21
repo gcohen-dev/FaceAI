@@ -17,7 +17,7 @@ public struct Face: Hashable, Identifiable {
     let faceID: String
     public let faceCroppedImage: UIImage
     let meanEmbedded: [Double]
-    let faceFeatures: VNFaceObservation
+    let faceObservation: VNFaceObservation
     let quality: Float
     
     public func hash(into hasher: inout Hasher) {
