@@ -6,15 +6,9 @@
 //
 
 import Foundation
-#if os(iOS)
 import UIKit
-#endif
-#if os(macOS)
-import AppKit
-#endif
-class Defaults {
-    
 
+class Defaults {
     
     static let shared = Defaults()
     
@@ -35,8 +29,8 @@ class Defaults {
     
     
     //MARK: Debug
-    var drawFeaturePoints: Bool = true
-    
+    var drawFeaturePoints: Bool = false
+    var print: Bool = true
     
     private init() { }
 }

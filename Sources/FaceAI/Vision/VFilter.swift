@@ -216,7 +216,7 @@ public class VFilter {
     }
     
     // Convert PocessAsset To ProcessedAsset
-    // Remove main image to reduce ram print
+    // Remove main image to reduce ram foot print
     static func clean(asset: ProcessAsset) throws -> ProcessedAsset {
         ProcessedAsset(asset: asset)
     }

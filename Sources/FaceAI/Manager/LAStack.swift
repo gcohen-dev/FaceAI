@@ -85,7 +85,9 @@ class LAStack {
                     let detectObjects = try processor(asssts)
                     queue.async {
                         objects.append(contentsOf: detectObjects)
-                        print("Finish \(asssts.count) photos in: \(startDate.timeIntervalSinceNow * -1) second")
+                        if Defaults.shared.print {
+                            print("Finish \(asssts.count) photos in: \(startDate.timeIntervalSinceNow * -1) second")
+                        }
                     }
                 }catch {   }
             }

@@ -61,7 +61,9 @@ class LinearAlgebra {
         dgels_(&mode, &nrows, &ncols, &nrhs, &localA, &nrows_copy, &localB, &ldb, &work, &lwork, &info)
 
         if info != 0 {
-            print("A does not have full rank; the least squares solution could not be computed.")
+            if Defaults.shared.print {
+                print("A does not have full rank; the least squares solution could not be computed.")
+            }
             return nil
         }
         return Array(localB.prefix(Int(ncols)))

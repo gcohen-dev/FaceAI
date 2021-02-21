@@ -51,7 +51,11 @@ public final class FaceAI {
                 
                 let groupFaces = ChineseWhispers.group(faces: faces,
                                                        labels: labels).filter({$0.faces.count > culsterOptions.minimumClusterSize })
-                print("Finish clustering in: \(startDate.timeIntervalSinceNow * -1) second\nTotal number of faces: \(faces.count)\nTotal number of clusters: \(groupFaces.count)")
+                if Defaults.shared.print {
+                    print("\n============************===============")
+                    print("Finish clustering in: \(startDate.timeIntervalSinceNow * -1) second\nTotal number of faces: \(faces.count)\nTotal number of clusters: \(groupFaces.count)")
+                    print("============************===============")
+                }
                 completion(.success(groupFaces))
 
                 
