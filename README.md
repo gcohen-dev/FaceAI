@@ -29,14 +29,16 @@ import FaceAI
 
 ## Basic Usage
 ### Fetch options
-Before we start detecting, We need to decide what assets we want to fetch. 
-Create ```AssetFetchingOptions``` for fetching request.
+Firstly, FaceAI provides useful initializers to create asset fetching options using ```AssetFetchingOptions```
 ```swift 
 // Create default fetch options
 let options = AssetFetchingOptions()
 ```
 
-Custom ```AssetFetchingOptions``` for fetching request.
+We can custom ```AssetFetchingOptions``` with 3 properties:
+- sortDescriptors: Ascending\Descending
+- assetCollection: Source of the photos
+- fetchLimit: Limit the amount of photos we are fetching
 ```swift
 let options = AssetFetchingOptions(sortDescriptors: [NSSortDescriptor]?,
                                    assetCollection: AssetCollection,
