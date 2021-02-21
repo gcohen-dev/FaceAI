@@ -26,7 +26,8 @@ class Interpulation {
                                              size: chipDetail.rect.size)) else {
             return nil
         }
-        return croppedImage
+        let scalledImage = scale(image: croppedImage, targetSize: CGSize(width: chipDetail.rect.width, height: chipDetail.rect.height))
+        return scalledImage
     }
     
     static func getFaceChipDetails(det: VNFaceObservation,
