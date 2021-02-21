@@ -36,9 +36,9 @@ let options = AssetFetchingOptions()
 ```
 
 We can custom ```AssetFetchingOptions``` with 3 properties:
-- sortDescriptors: Ascending\Descending
-- assetCollection: Source of the photos
-- fetchLimit: Limit the amount of photos we are fetching
+- sortDescriptors: Ascending\Descending.
+- assetCollection: Photos source.
+- fetchLimit: Limit the amount of photos we are fetching.
 ```swift
 let options = AssetFetchingOptions(sortDescriptors: [NSSortDescriptor]?,
                                    assetCollection: AssetCollection,
